@@ -1,4 +1,3 @@
-```markdown
 # Boilup
 
 Boilup is a tool for generating boilerplate code for projects. It allows you to build custom actions consisting of various methods that run in different stages. Each action can have child actions, providing a flexible and extensible system.
@@ -23,20 +22,15 @@ Boilup works in stages, each stage serving a specific purpose in the boilerplate
 
 ### Stages
 
-1. **Loading Actions**
-  - Loads the specified actions.
+1. **Loading Actions** - Loads the specified actions.
 
-2. **Collecting Data**
-  - Used for running terminal prompts for the user or fetching any other information needed for further processing.
+2. **Collecting Data** - Used for running terminal prompts for the user or fetching any other information needed for further processing.
 
-3. **Executing Actions**
-  - Runs the action, stacking files and their contents to be written.
+3. **Executing Actions** - Runs the action, stacking files and their contents to be written.
 
-4. **Writing Files**
-  - Writes all stacked files to the disk.
+4. **Writing Files** - Writes all stacked files to the disk.
 
-5. **Post-write**
-  - Runs additional actions after files are written, such as installing packages, running command line scripts, validating output, or displaying final messages.
+5. **Post-write** - Runs additional actions after files are written, such as installing packages, running command line scripts, validating output, or displaying final messages.
 
 ### Creating Actions
 
