@@ -3,6 +3,18 @@
   "description": "Boilerplate code generator",
   "version": "0.0.0-alpha.03",
   "author": "Jakub Hajduk",
+  "keywords": [
+    "boilerplate",
+    "code",
+    "generator",
+    "init",
+    "starter",
+    "programmatic",
+    "esm",
+    "typed",
+    "files",
+    "write"
+  ],
   "type": "module",
   "license": "MIT",
   "scripts": {
