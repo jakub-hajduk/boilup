@@ -1,7 +1,7 @@
 {
   "name": "boilup",
   "description": "Boilerplate code generator",
-  "version": "0.0.0-alpha.02",
+  "version": "0.0.0-alpha.03",
   "author": "Jakub Hajduk",
   "type": "module",
   "license": "MIT",
