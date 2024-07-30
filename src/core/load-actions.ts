@@ -1,15 +1,23 @@
 import { colors } from 'consola/utils'
 import type { Context } from './context'
-import type { BoilupAction } from './types'
+import type { BoilupAction, BoilupCanLoadMethodParams } from './types'
 
 export async function loadActions(context: Context, actions: BoilupAction[] = []): Promise<BoilupAction[]> {
   const loadedActions = []
 
   for (const action of actions) {
+
+    const canLoadParameters: BoilupCanLoadMethodParams = {
+      files: context.files,
+      logger: context.logger,
+      actions,
+      context
+    }
+
     const subContext = context.createSubContext(action.name)
     const logger = subContext.logger
 
-    if (action.canLoad && await action.canLoad(actions, subContext) === false ) {
+    if (action.canLoad && await action.canLoad(canLoadParameters) === false ) {
       logger.debug(`skipped: ${colors.bold(action.name)} (canLoad returned false).`)
       continue
     }

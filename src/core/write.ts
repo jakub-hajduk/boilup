@@ -2,7 +2,6 @@ import type { Context } from './context'
 import { relative } from 'path'
 
 export async function write({ logger, files }: Context) {
-
   files.on('write:file-written', (data) => {
     const file = relative(process.cwd(), data.path)
     logger.success(`${file} (${data.index}/${data.total})`)
@@ -19,6 +18,4 @@ export async function write({ logger, files }: Context) {
   })
 
   files.writeFilesToDisk()
-
-
 }

@@ -39,9 +39,9 @@ Actions are the core of Boilup's functionality. Each action can be defined with 
 ```typescript
 import { exists } from 'node:fs'
 import { installDependencies } from 'nypm'
-import type { Action, CollectedData, BoilupAction, Context } from 'boilup'
+import { input } from '@inquirer/prompts'
+import type { BoilupCanLoadMethod, BoilupAction, BoilupActionMethod, BoilupCollectDataMethod, BoilupPostWriteMethod } from 'boilup'
 
-const files = context.files
 const moduleName = 'create-package-json'
 
 export interface PackageJsonData {
@@ -50,13 +50,13 @@ export interface PackageJsonData {
   author: string
 }
 
-async function canLoad() {
+const canLoad: BoilupCanLoadMethod = async () => {
   if (await exists('./package.json')) {
     return false
   }
 }
 
-async function collectData(): Promise<PackageJsonData> {
+const collectData: BoilupCollectDataMethod<PackageJsonData> = async () => {
   const name = await input({ message: `Package name` })
   const version = await input({ message: `Version` })
   const author = await input({ message: `Author` })
@@ -64,9 +64,7 @@ async function collectData(): Promise<PackageJsonData> {
   return { name, version, author }
 }
 
-async function action(data: PackageJsonData, fullData: CollectedData, actions: BoilupAction[], context: Context) {
-  const { files } = context
-
+const action: BoilupActionMethod<PackageJsonData> = async ({ data, files }) => {
   const template = {
     name: data.name,
     version: data.version,
@@ -80,17 +78,17 @@ async function action(data: PackageJsonData, fullData: CollectedData, actions: B
     }
   }
 
-  const packageJsonString = JSON.parse(template, null, 2)
+  const packageJsonString = JSON.stringify(template, null, 2)
 
   files.write('./package.json', packageJsonString, moduleName)
 }
 
-async function postWrite() {
+const postWrite: BoilupPostWriteMethod<PackageJsonData> = async () => {
   await installDependencies()
   console.log('Main package.json file successfully created!')
 }
 
-export const createPackageJson: Action<PackageJsonData> = {
+export const createPackageJson: BoilupAction<PackageJsonData> = {
   name: moduleName,
   description: 'Generates package.json file with provided data.',
   canLoad,
@@ -111,13 +109,9 @@ import createPackageJson from './create-package-json.action.ts'
 run(
   [ createPackageJson],
   {
-    logger: {
-      level: 5
-    },
-    files: {
-      outDir: './new-project',
-      dry: true
-    }
+    outDir: './new-project',
+    debug: true,
+    dryRun: true
   }
 );
 ```
@@ -143,90 +137,130 @@ async function init() {
 
 init()
 ```
+# Boilup API Documentation
 
-## BoilupAction API Reference
+## Boilup Methods
 
-`BoilupAction` is a type used for creating custom actions in the Boilup library. Each action can have various methods that run in different stages of the boilerplate generation process. This documentation provides a detailed overview of the available properties and methods.
+### BoilupCanLoadMethod
+
+```typescript
+type BoilupCanLoadMethod = (params: BoilupCanLoadMethodParams) => Promise<boolean | undefined>;
+
+interface BoilupCanLoadMethodParams {
+  files: OutputCollection;
+  logger: Logger;
+  context: Context;
+  actions: BoilupAction[];
+}
+```
+
+Checks whether an action and its child actions should be loaded. Returns `true` to load, `false` to skip, or `undefined` for default behavior.
+
+### BoilupCanCollectDataMethod
+
+```typescript
+type BoilupCanCollectDataMethod = (params: BoilupCanCollectDataMethodParams) => Promise<boolean | undefined>;
+
+interface BoilupCanCollectDataMethodParams {
+  files: OutputCollection;
+  logger: Logger;
+  context: Context;
+  upToNowData: CollectedData;
+}
+```
+
+Determines if the data collection step should be performed. Returns `true` to collect data, `false` to skip, or `undefined` for default behavior.
+
+### BoilupCollectDataMethod
+
+```typescript
+type BoilupCollectDataMethod<A> = (params: BoilupCollectDataMethodParams) => Promise<A>;
+
+interface BoilupCollectDataMethodParams {
+  files: OutputCollection;
+  logger: Logger;
+  context: Context;
+  upToNowData: CollectedData;
+}
+```
+
+Collects necessary data for future processing. The return value is added to `fullData` under the action's name.
+
+### BoilupCanExecuteActionMethod
+
+```typescript
+type BoilupCanExecuteActionMethod = (params: BoilupCanExecuteMethodParams) => Promise<boolean | undefined>;
+
+interface BoilupCanExecuteMethodParams {
+  files: OutputCollection;
+  logger: Logger;
+  context: Context;
+  fullData: CollectedData;
+}
+```
+
+Determines if the action should be executed. Returns `true` to execute, `false` to skip, or `undefined` for default behavior.
+
+### BoilupActionMethod
+
+```typescript
+type BoilupActionMethod<A> = (params: BoilupActionMethodParams<A>) => Promise<void>;
+
+interface BoilupActionMethodParams<A> {
+  files: OutputCollection;
+  logger: Logger;
+  context: Context;
+  fullData: CollectedData;
+  data: A;
+  actions: BoilupAction[];
+}
+```
+
+Main logic of an action, processing the collected data and performing tasks.
+
+### BoilupPostWriteMethod
+
+```typescript
+type BoilupPostWriteMethod<A> = (params: BoilupPostWriteMethodParams<A>) => Promise<void>;
+
+interface BoilupPostWriteMethodParams<A> {
+  files: OutputCollection;
+  logger: Logger;
+  context: Context;
+  data: A;
+  fullData: CollectedData;
+}
+```
+
+Additional tasks executed after all files are written.
+
+## BoilupAction Interface
 
 ```typescript
 interface BoilupAction<A extends Record<string, any> = any> {
   name: string;
   description: string;
   subActions?: BoilupAction[];
-
-  canLoad?: (actions: BoilupAction[], context: Context) => Promise<boolean>;
-  canCollectData?: (upToNowData: CollectedData, context: Context) => Promise<boolean>;
-  collectData?: (upToNowData: CollectedData, context: Context) => Promise<A>;
-  canExecuteAction?: (fullData: CollectedData, context: Context) => Promise<boolean>;
-  action?: (currentData: A, fullData: CollectedData, actions: BoilupAction[], context: Context) => Promise<void>;
-  postWrite?: (currentData: A, fullData: CollectedData, context: Context) => Promise<void>;
+  canLoad?: BoilupCanLoadMethod;
+  canCollectData?: BoilupCanCollectDataMethod;
+  collectData?: BoilupCollectDataMethod<A>;
+  canExecuteAction?: BoilupCanExecuteActionMethod;
+  action?: BoilupActionMethod<A>;
+  postWrite?: BoilupPostWriteMethod<A>;
 }
 ```
 
-### Properties
+Defines a Boilup action with the following properties:
 
-- **name**: `string`
-  - Name of the action. Used for identification purposes.
-
-- **description**: `string`
-  - Description of the action.
-
-- **subActions**: `BoilupAction[]`
-  - Optional. Contains child actions. Can be used to create a group of actions that are loaded at once.
-
-### Methods
-
-- **canLoad**: `(actions: BoilupAction[], context: Context) => Promise<boolean>`
-  - Optional. Determines whether the action and its child actions should be loaded. Returns `true` or `undefined` to load, `false` to skip.
-
-  **Example**:
-  ```typescript
-  async function canLoad(actions) {
-    if (actions.some(action => action.name.startsWith('package-manager'))) {
-      return Promise.resolve(false);
-    }
-  }
-  ```
-
-- **canCollectData**: `(upToNowData: CollectedData, context: Context) => Promise<boolean>`
-  - Optional. Determines whether the data collection step should be performed. Returns `true` or `undefined` to collect data, `false` to skip.
-
-  **Example**:
-  ```typescript
-  async function canCollectData() {
-    const data = await getConfigFromFile('./config.json');
-    if (data.skipMonorepoSetup) {
-      return false;
-    }
-  }
-  ```
-
-- **collectData**: `(upToNowData: CollectedData, context: Context) => Promise<A>`
-  - Optional. Collects needed data for future processing. The return value will be added to the `fullData` under the action's name for subsequent actions. `upToNowData` contains all data collected up to this point.
-
-  **Example**:
-  ```typescript
-  import { input } from '@inquirer/prompts';
-
-  async function collectData(fullData) {
-    const name = input({ message: 'Name of the project' });
-    const cwd = process.cwd();
-
-    return {
-      name,
-      cwd
-    };
-  }
-  ```
-
-- **canExecuteAction**: `(fullData: CollectedData, context: Context) => Promise<boolean>`
-  - Optional. Determines whether the action should be executed. Returns `true` to execute, `false` to skip.
-
-- **action**: `(currentData: A, fullData: CollectedData, actions: BoilupAction[], context: Context) => Promise<void>`
-  - Optional. Main logic of the action.
-
-- **postWrite**: `(currentData: A, fullData: CollectedData, context: Context) => Promise<void>`
-  - Optional. Additional action executed after all files are written.
+- **name**: `string` - The name of the action.
+- **description**: `string` - A description of the action.
+- **subActions**: `BoilupAction[]` - Optional child actions.
+- **canLoad**: `BoilupCanLoadMethod` - Optional method to check if the action should be loaded.
+- **canCollectData**: `BoilupCanCollectDataMethod` - Optional method to check if data should be collected.
+- **collectData**: `BoilupCollectDataMethod` - Optional method to collect necessary data.
+- **canExecuteAction**: `BoilupCanExecuteActionMethod` - Optional method to check if the action should be executed.
+- **action**: `BoilupActionMethod` - Optional method for the main logic of the action.
+- **postWrite**: `BoilupPostWriteMethod` - Optional method for tasks after all files are written.
 
 
 # Writing Files in Boilup Actions
