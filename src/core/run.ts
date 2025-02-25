@@ -6,7 +6,7 @@ import { postWrite } from './post-write';
 import type { BoilupAction } from './types';
 import { write } from './write';
 
-export async function run(actions: BoilupAction[], options?: ContextOptions) {
+export async function run(actions: BoilupAction[], options?: Partial<ContextOptions>) {
   const context: Context = createContext(options);
 
   // context.logger.debug( colors.bold(`Phase: Loading actions`) )
