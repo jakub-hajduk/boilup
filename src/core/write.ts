@@ -1,21 +1,6 @@
-import type { Context } from './context'
-import { relative } from 'path'
+import type { Context } from './context';
 
-export async function write({ logger, files }: Context) {
-  files.on('write:file-written', (data) => {
-    const file = relative(process.cwd(), data.path)
-    logger.success(`${file} (${data.index}/${data.total})`)
-  })
-
-  files.on('write:file-error', (data) => {
-    const file = relative(data.path, process.cwd())
-    logger.fail(file)
-    process.exit(1)
-  })
-
-  files.on('write:done', (data) => {
-    logger.success(`Successfully written all files!`)
-  })
-
-  files.writeFilesToDisk()
+export async function write(this: Context) {
+  const writtenFiles = this.files.writeFilesToDisk();
+  while (!writtenFiles.next().done) {}
 }

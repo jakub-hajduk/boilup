@@ -1,49 +1,49 @@
-import { colors } from 'consola/utils'
-import type { Context } from './context'
+import type { Context } from './context';
 import type {
-  CollectedData,
   BoilupAction,
   BoilupCanCollectDataMethodParams,
-  BoilupCollectDataMethodParams
-} from './types'
+  BoilupCollectDataMethodParams,
+  CollectedData,
+} from './types';
 
-export async function collectData(context: Context, actions: BoilupAction[] = []) {
-  const collectedData: CollectedData = {}
+export async function collectData(this: Context, actions: BoilupAction[] = []) {
+  const collectedData: CollectedData = {};
 
-  for(const action of actions) {
-    const subContext = context.createSubContext(action.name)
-    const logger = subContext.logger
-
+  for (const action of actions) {
     const canCollectDataParams: BoilupCanCollectDataMethodParams = {
-      files: context.files,
-      logger: context.logger,
-      context: context,
-      upToNowData: collectedData
-    }
+      files: this.files,
+      context: this,
+      upToNowData: collectedData,
+    };
 
-    if (action.canCollectData && await action.canCollectData(canCollectDataParams) === false) {
-      logger.debug(`Skipping collecting data for ${colors.bold(action.name)} action (canCollectData returned false).`)
-      continue
+    if (
+      action.canCollectData &&
+      (await Promise.resolve(action.canCollectData(canCollectDataParams))) ===
+        false
+    ) {
+      // logger.debug(`Skipping collecting data for ${colors.bold(action.name)} action (canCollectData returned false).`)
+      continue;
     }
 
     if (!action.collectData) {
-      logger.debug(`No collectData function for ${colors.bold(action.name)} action.`)
-      continue
+      // logger.debug(`No collectData function for ${colors.bold(action.name)} action.`)
+      continue;
     }
 
     const collectDataParams: BoilupCollectDataMethodParams = {
-      files: context.files,
-      logger: context.logger,
-      context: context,
-      upToNowData: collectedData
-    }
+      files: this.files,
+      context: this,
+      upToNowData: collectedData,
+    };
 
-    const answers = await action.collectData(collectDataParams)
+    const answers = await Promise.resolve(
+      action.collectData(collectDataParams),
+    );
 
-    logger.debug(`Collected ${Object.keys(answers).length} data from ${colors.bold(action.name)} action.`)
+    // logger.debug(`Collected ${Object.keys(answers).length} data from ${colors.bold(action.name)} action.`)
 
-    collectedData[action.name] = answers
+    collectedData[action.name] = answers;
   }
 
-  return collectedData
+  return collectedData;
 }

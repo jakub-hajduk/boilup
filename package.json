@@ -1,28 +1,47 @@
 {
   "name": "boilup",
   "description": "Boilerplate code generator",
-  "version": "0.0.0-alpha.02",
-  "author": "Jakub Hajduk",
+  "version": "0.0.1",
   "type": "module",
+  "author": "Jakub Hajduk",
+  "keywords": [
+    "boilerplate",
+    "code",
+    "generator",
+    "init",
+    "starter",
+    "programmatic",
+    "esm",
+    "typed",
+    "files",
+    "write"
+  ],
   "license": "MIT",
   "scripts": {
+    "dev": "pkgroll --watch",
     "build": "pkgroll",
-    "dev": "pkgroll --watch"
+    "check": "biome check",
+    "fix": "biome check --fix",
+    "test": "tsx ./scripts/test-runner.ts"
   },
   "engines": {
     "node": ">=20.0"
   },
   "dependencies": {
-    "consola": "^3.2.3",
-    "fast-myers-diff": "^3.2.0",
-    "ora": "^8.0.1"
+    "boilup": "link:",
+    "writepool": "^0.0.1"
   },
   "devDependencies": {
-    "@types/node": "^20.14.5",
+    "@biomejs/biome": "1.9.4",
+    "@types/node": "^20.14.9",
+    "changelogen": "^0.5.7",
+    "dotenv": "^16.4.7",
+    "glob": "^11.0.1",
     "pkgroll": "^2.1.1",
     "tsx": "^4.15.6",
     "typescript": "^5.4.5"
   },
+  "files": ["dist"],
   "main": "./dist/index.cjs",
   "module": "./dist/index.js",
   "types": "./dist/index.d.ts",
