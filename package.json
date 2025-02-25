@@ -28,7 +28,6 @@
     "node": ">=20.0"
   },
   "dependencies": {
-    "boilup": "link:",
     "writepool": "^0.0.1"
   },
   "devDependencies": {
