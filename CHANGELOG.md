@@ -1,6 +1,18 @@
 # Changelog
 
 
+## v0.0.3
+
+[compare changes](https://github.com/jakub-hajduk/boilup/compare/v0.0.2...v0.0.3)
+
+### 🏡 Chore
+
+- Update package information ([6966756](https://github.com/jakub-hajduk/boilup/commit/6966756))
+
+### ❤️ Contributors
+
+- Jakub Hajduk <devhajduk@gmail.com>
+
 ## v0.0.2
 
 
