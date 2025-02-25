@@ -104,13 +104,12 @@ To run Boilup with your defined actions:
 
 ```typescript
 import { run } from 'boilup'
-import createPackageJson from './create-package-json.action.ts'
+import { createPackageJson } from './create-package-json.action'
 
 run(
-  [ createPackageJson],
+  [ createPackageJson ],
   {
     outDir: './new-project',
-    debug: true,
     dryRun: true
   }
 );
@@ -124,15 +123,15 @@ import { createContext, loadActions, collectData, executeActions, write, postWri
 async function init() {
   const context: Context = createContext({ ... })
 
-  const loadedActions = await loadActions(context, [ ... ])
+  const loadedActions = await loadActions.call(context, [ ... ])
   
-  const data = await collectData(context, loadedActions)
+  const data = await collectData.call(context, loadedActions)
 
-  await executeActions(context, loadedActions, data)
+  await executeActions.call(context, loadedActions, data)
   
-  write(context)
+  await write.call(context)
   
-  await postWrite(context, loadedActions, data)
+  await postWrite.call(context, loadedActions, data)
 }
 
 init()
@@ -144,11 +143,10 @@ init()
 ### BoilupCanLoadMethod
 
 ```typescript
-type BoilupCanLoadMethod = (params: BoilupCanLoadMethodParams) => Promise<boolean | undefined>;
+type BoilupCanLoadMethod = (params: BoilupCanLoadMethodParams) => MaybePromise<boolean | void>;
 
 interface BoilupCanLoadMethodParams {
-  files: OutputCollection;
-  logger: Logger;
+  files: Writepool;
   context: Context;
   actions: BoilupAction[];
 }
@@ -159,11 +157,10 @@ Checks whether an action and its child actions should be loaded. Returns `true` 
 ### BoilupCanCollectDataMethod
 
 ```typescript
-type BoilupCanCollectDataMethod = (params: BoilupCanCollectDataMethodParams) => Promise<boolean | undefined>;
+type BoilupCanCollectDataMethod = (params: BoilupCanCollectDataMethodParams) => MaybePromise<boolean | undefined>;
 
 interface BoilupCanCollectDataMethodParams {
-  files: OutputCollection;
-  logger: Logger;
+  files: Writepool;
   context: Context;
   upToNowData: CollectedData;
 }
@@ -174,11 +171,10 @@ Determines if the data collection step should be performed. Returns `true` to co
 ### BoilupCollectDataMethod
 
 ```typescript
-type BoilupCollectDataMethod<A> = (params: BoilupCollectDataMethodParams) => Promise<A>;
+type BoilupCollectDataMethod<A> = (params: BoilupCollectDataMethodParams) => MaybePromise<A>;
 
 interface BoilupCollectDataMethodParams {
-  files: OutputCollection;
-  logger: Logger;
+  files: Writepool;
   context: Context;
   upToNowData: CollectedData;
 }
@@ -189,11 +185,10 @@ Collects necessary data for future processing. The return value is added to `ful
 ### BoilupCanExecuteActionMethod
 
 ```typescript
-type BoilupCanExecuteActionMethod = (params: BoilupCanExecuteMethodParams) => Promise<boolean | undefined>;
+type BoilupCanExecuteActionMethod = (params: BoilupCanExecuteMethodParams) => MaybePromise<boolean | undefined>;
 
 interface BoilupCanExecuteMethodParams {
-  files: OutputCollection;
-  logger: Logger;
+  files: Writepool;
   context: Context;
   fullData: CollectedData;
 }
@@ -204,11 +199,10 @@ Determines if the action should be executed. Returns `true` to execute, `false` 
 ### BoilupActionMethod
 
 ```typescript
-type BoilupActionMethod<A> = (params: BoilupActionMethodParams<A>) => Promise<void>;
+type BoilupActionMethod<A> = (params: BoilupActionMethodParams<A>) => MaybePromise<void>;
 
 interface BoilupActionMethodParams<A> {
-  files: OutputCollection;
-  logger: Logger;
+  files: Writepool;
   context: Context;
   fullData: CollectedData;
   data: A;
@@ -221,11 +215,10 @@ Main logic of an action, processing the collected data and performing tasks.
 ### BoilupPostWriteMethod
 
 ```typescript
-type BoilupPostWriteMethod<A> = (params: BoilupPostWriteMethodParams<A>) => Promise<void>;
+type BoilupPostWriteMethod<A> = (params: BoilupPostWriteMethodParams<A>) => MaybePromise<void>;
 
 interface BoilupPostWriteMethodParams<A> {
-  files: OutputCollection;
-  logger: Logger;
+  files: Writepool;
   context: Context;
   data: A;
   fullData: CollectedData;
@@ -269,77 +262,12 @@ In all methods of an action, you have access to the current list of files in the
 
 ## Adding New Files
 
-The `files.write` method accessible from the context doesn't write the file to the disk immediately. Instead, it stacks the new content for the file path, enabling you to modify files later or debug the file changes before they are written.
-
-### Example
-
-```typescript
-async function action(currentData: A, fullData: CollectedData, actions: BoilupAction[], context: Context) {
-  const { files } = context;
-
-  const time = await fetch('http://worldtimeapi.org/api/timezone/Europe/Warsaw');
-  
-  files.write('./created-at.txt', time.datetime);
-}
-```
-
-It's a good practice to provide the origin of the change, usually the name of the action, but you can specify a custom name.
-
-### Example
-
-```typescript
-files.write('./README.md', contents, 'readme-md-generator');
-```
+Please refer to [Writepool docs](https://github.com/jakub-hajduk/writepool?tab=readme-ov-file#adding-new-files)
 
 ## Editing Stacked Files
 
-You can edit a file that has already been created using the `write` method.
-
-### Example
-
-```typescript
-async function action(currentData: A, fullData: CollectedData, actions: BoilupAction[], context: Context) {
-  const { files } = context;
-
-  const [versionPath, versionContents] = files.get((path) => path.includes('version.json'));
-  
-  if (versionContents) {
-    const parsedVersionContents = JSON.parse(versionContents);
-    parsedVersionContents.version = 'v.2.0.0';
-    files.write(versionPath, JSON.stringify(parsedVersionContents), 'version-bumper');
-  }
-}
-```
+Please refer to [Writepool docs](https://github.com/jakub-hajduk/writepool?tab=readme-ov-file#editing-stacked-files) 
 
 ## Debugging Changes
 
-You can also track the changes made to a file.
-
-### Example
-
-```typescript
-async function action(currentData: A, fullData: CollectedData, actions: BoilupAction[], context: Context) {
-  const { files } = context;
-
-  const changes = files.getChanges('./package.json');
-  
-  // Compare the last and penultimate changes
-  changes.diff(-1, -2); // Prints colored diff in the console
-}
-```
-
-Or you can check which action caused the last change.
-
-### Example
-
-```typescript
-async function action(currentData: A, fullData: CollectedData, actions: BoilupAction[], context: Context) {
-  const { files } = context;
-
-  const packageJsonChanges = files.getChanges('./package.json');
-
-  const change = packageJsonChanges.get(-1);
-
-  console.log('Change was performed by', change.origin, 'at', (new Date(change.timestamp)).toLocaleTimeString());
-}
-```
+Please refer to [Writepool docs](https://github.com/jakub-hajduk/writepool?tab=readme-ov-file#debugging-changes).

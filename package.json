@@ -1,7 +1,8 @@
 {
   "name": "boilup",
   "description": "Boilerplate code generator",
-  "version": "0.0.0-alpha.03",
+  "version": "0.0.1",
+  "type": "module",
   "author": "Jakub Hajduk",
   "keywords": [
     "boilerplate",
@@ -15,7 +16,6 @@
     "files",
     "write"
   ],
-  "type": "module",
   "license": "MIT",
   "scripts": {
     "dev": "pkgroll --watch",
@@ -29,7 +29,7 @@
   },
   "dependencies": {
     "boilup": "link:",
-    "writepool": "^0.0.0"
+    "writepool": "^0.0.1"
   },
   "devDependencies": {
     "@biomejs/biome": "1.9.4",
@@ -41,9 +41,7 @@
     "tsx": "^4.15.6",
     "typescript": "^5.4.5"
   },
-  "files": [
-    "dist"
-  ],
+  "files": ["dist"],
   "main": "./dist/index.cjs",
   "module": "./dist/index.js",
   "types": "./dist/index.d.ts",

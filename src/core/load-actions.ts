@@ -14,7 +14,10 @@ export async function loadActions(
       context: this,
     };
 
-    if (action.canLoad && (await action.canLoad(canLoadParameters)) === false) {
+    if (
+      action.canLoad &&
+      (await Promise.resolve(action.canLoad(canLoadParameters))) === false
+    ) {
       // logger.debug(`skipped: ${colors.bold(action.name)} (canLoad returned false).`)
       continue;
     }
@@ -24,7 +27,9 @@ export async function loadActions(
 
     if (action.subActions && action.subActions.length > 0) {
       // logger.debug(`Found ${action.subActions.length} subAction in ${colors.bold(action.name)} action.`)
-      const submodules = await loadActions.call(this, action.subActions);
+      const submodules = await Promise.resolve(
+        loadActions.call(this, action.subActions),
+      );
       loadedActions.push(...submodules);
     }
   }

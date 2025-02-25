@@ -23,8 +23,7 @@ export async function postWrite(
       continue;
     }
 
-    await action.postWrite(postWriteParams);
-
+    await Promise.resolve(action.postWrite(postWriteParams));
     // logger.debug(`Executed postWrite function for ${colors.bold(action.name)} action.`)
   }
 }

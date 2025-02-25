@@ -3,6 +3,8 @@ import type { Context } from './context';
 
 export type BaseData = Record<string, any>;
 
+type MaybePromise<T> = Promise<T> | T;
+
 export interface Command {
   command: string;
   cwd: string;
@@ -50,7 +52,6 @@ export interface BoilupPostWriteMethodParams<A> {
 }
 
 /**
- * @async
  * canLoad (optional)
  *
  * Function called to check whether action and its childActions shall be loaded.
@@ -83,10 +84,9 @@ export interface BoilupPostWriteMethodParams<A> {
  */
 export type BoilupCanLoadMethod = (
   params: BoilupCanLoadMethodParams,
-) => Promise<boolean | undefined>;
+) => MaybePromise<boolean | undefined>;
 
 /**
- * @async
  * canCollectData (optional)
  *
  * Defines whether data collection step should be performed or not.
@@ -113,10 +113,9 @@ export type BoilupCanLoadMethod = (
  */
 export type BoilupCanCollectDataMethod = (
   params: BoilupCanCollectDataMethodParams,
-) => Promise<boolean | undefined>;
+) => MaybePromise<boolean | undefined>;
 
 /**
- * @async
  * collectData (optional)
  *
  * Collects needed data for future processings, whether these are  user prompts to ge user's answers,
@@ -155,10 +154,9 @@ export type BoilupCanCollectDataMethod = (
  */
 export type BoilupCollectDataMethod<A> = (
   params: BoilupCanCollectDataMethodParams,
-) => Promise<A>;
+) => MaybePromise<A>;
 
 /**
- * @async
  * canExecute (optional)
  *
  * Function that determines whether the action should be executed or not.
@@ -175,10 +173,9 @@ export type BoilupCollectDataMethod<A> = (
  */
 export type BoilupCanExecuteActionMethod = (
   params: BoilupCanExecuteMethodParams,
-) => Promise<boolean | undefined>;
+) => MaybePromise<boolean | undefined>;
 
 /**
- * @async
  * execute (optional)
  *
  * Main logic of an action.
@@ -189,11 +186,10 @@ export type BoilupCanExecuteActionMethod = (
  */
 export type BoilupActionMethod<A> = (
   params: BoilupActionMethodParams<A>,
-) => Promise<void>;
+) => MaybePromise<void>;
 
 /**
  * @experimental
- * @async
  * postWrite (optional)
  *
  * Additional action that is executed after all files are written
@@ -203,7 +199,7 @@ export type BoilupActionMethod<A> = (
  */
 export type BoilupPostWriteMethod<A> = (
   params: BoilupPostWriteMethodParams<A>,
-) => Promise<void>;
+) => MaybePromise<void>;
 
 export interface BoilupAction<A extends Record<string, any> = any> {
   /**

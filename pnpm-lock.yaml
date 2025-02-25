@@ -12,8 +12,8 @@ importers:
         specifier: 'link:'
         version: 'link:'
       writepool:
-        specifier: ^0.0.0
-        version: 0.0.0
+        specifier: ^0.0.1
+        version: 0.0.1
     devDependencies:
       '@biomejs/biome':
         specifier: 1.9.4
@@ -5337,8 +5337,8 @@ packages:
   write-file-atomic@3.0.3:
     resolution: {integrity: sha512-AvHcyZ5JnSfq3ioSyjrBkH9yW4m7Ayk8/9My/DD9onKeu/94fwrMocemO2QAJFAlnnDN+ZDS+ZjAR5ua1/PV/Q==}
 
-  writepool@0.0.0:
-    resolution: {integrity: sha512-KggpJafL9H3h6HkaSnqp+xFWyuvxxcz/gvVmRE/c9SGa+1K6qv8W0bLA6ltUTMuSay+m8NBtdeJnlnt+CzV4+Q==}
+  writepool@0.0.1:
+    resolution: {integrity: sha512-S3hdwmZgUSy5jBPgMh6JPWxs8I6zj7KKuUbiNI+3PRaILzIzEAeVpX0jdqW64ZcAbRvfqyoYBTlBpTaKbhnRPA==}
 
   ws@7.5.10:
     resolution: {integrity: sha512-+dbF1tHwZpXcbOJdVOkzLDxZP1ailvSxM6ZweXTegylPny803bFhA+vqBYw4s31NSAk4S2Qz+AKXK9a4wkdjcQ==}
@@ -11917,7 +11917,7 @@ snapshots:
       signal-exit: 3.0.7
       typedarray-to-buffer: 3.1.5
 
-  writepool@0.0.0:
+  writepool@0.0.1:
     dependencies:
       colorette: 2.0.20
       fast-myers-diff: 3.2.0

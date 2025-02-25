@@ -18,7 +18,8 @@ export async function collectData(this: Context, actions: BoilupAction[] = []) {
 
     if (
       action.canCollectData &&
-      (await action.canCollectData(canCollectDataParams)) === false
+      (await Promise.resolve(action.canCollectData(canCollectDataParams))) ===
+        false
     ) {
       // logger.debug(`Skipping collecting data for ${colors.bold(action.name)} action (canCollectData returned false).`)
       continue;
@@ -35,7 +36,9 @@ export async function collectData(this: Context, actions: BoilupAction[] = []) {
       upToNowData: collectedData,
     };
 
-    const answers = await action.collectData(collectDataParams);
+    const answers = await Promise.resolve(
+      action.collectData(collectDataParams),
+    );
 
     // logger.debug(`Collected ${Object.keys(answers).length} data from ${colors.bold(action.name)} action.`)
 

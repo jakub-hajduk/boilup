@@ -20,7 +20,9 @@ export async function executeActions(
 
     if (
       action.canExecuteAction &&
-      (await action.canExecuteAction(canExecuteActionParams)) === false
+      (await Promise.resolve(
+        action.canExecuteAction(canExecuteActionParams),
+      )) === false
     ) {
       // logger.debug(`Skipping execution for ${colors.bold(action.name)} action (canExecuteAction returned false).`)
       continue;
@@ -39,7 +41,7 @@ export async function executeActions(
       fullData: data,
     };
 
-    await action.action(executeActionParams);
+    await Promise.resolve(action.action(executeActionParams));
     // logger.debug(`Executed ${colors.bold(action.name)} action.`)
   }
 }

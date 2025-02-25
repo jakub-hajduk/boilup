@@ -6,6 +6,7 @@
     "useIgnoreFile": false
   },
   "files": {
+    "include": ["./src/**/*.ts"],
     "ignoreUnknown": false,
     "ignore": ["dist", ".local"]
   },
@@ -22,8 +23,7 @@
     "rules": {
       "suspicious": {
         "noExplicitAny": "off"
-      },
-      "recommended": true
+      }
     }
   },
   "javascript": {

@@ -1,6 +1,6 @@
 import { Writepool } from 'writepool';
 
-export interface ContextOptions {
+export interface BoilupOptions {
   /**
    * Whether files should be written to disk or not.
    */
@@ -19,12 +19,11 @@ export interface ContextOptions {
 
 export interface Context {
   cwd: string;
-  name: string;
-  options: Partial<ContextOptions>;
+  options: Partial<BoilupOptions>;
   files: Writepool;
 }
 
-export function createContext(options?: Partial<ContextOptions>): Context {
+export function createContext(options?: Partial<BoilupOptions>): Context {
   const outputCollectionOptions = {
     dry: options?.dryRun || false,
     outDir: options?.outDir || './',
@@ -32,7 +31,6 @@ export function createContext(options?: Partial<ContextOptions>): Context {
   const files = new Writepool(outputCollectionOptions);
 
   const context: Context = {
-    name: 'root',
     cwd: process.cwd(),
     options: options || {},
     files,
