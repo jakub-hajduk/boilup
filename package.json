@@ -22,7 +22,8 @@
     "build": "pkgroll",
     "check": "biome check",
     "fix": "biome check --fix",
-    "test": "tsx ./scripts/test-runner.ts"
+    "test": "tsx ./scripts/test-runner.ts",
+    "release": "pnpm run fix && pnpm run build && changelogen --release --push --publish"
   },
   "engines": {
     "node": ">=20.0"
