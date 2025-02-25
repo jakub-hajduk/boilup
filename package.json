@@ -1,7 +1,7 @@
 {
   "name": "boilup",
   "description": "Boilerplate code generator",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "type": "module",
   "author": "Jakub Hajduk",
   "keywords": [
@@ -41,7 +41,9 @@
     "tsx": "^4.15.6",
     "typescript": "^5.4.5"
   },
-  "files": ["dist"],
+  "files": [
+    "dist"
+  ],
   "main": "./dist/index.cjs",
   "module": "./dist/index.js",
   "types": "./dist/index.d.ts",
