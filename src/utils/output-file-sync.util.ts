@@ -3,7 +3,11 @@ import { dirname } from 'node:path';
 
 type Params = Parameters<typeof writeFileSync>;
 
-export const outputFileSync = (file: string, data: Params[1], options?: Params[2]) => {
+export const outputFileSync = (
+  file: string,
+  data: Params[1],
+  options?: Params[2],
+) => {
   const dir = dirname(file);
 
   if (!existsSync(dir)) {

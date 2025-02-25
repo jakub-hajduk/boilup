@@ -1,10 +1,23 @@
 {
   "compilerOptions": {
-    "module": "ESNext",
     "target": "ESNext",
-    "esModuleInterop": true,
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
+    "moduleDetection": "force",
+    "lib": ["ESNext"],
+
+    "esModuleInterop": false,
+    "resolveJsonModule": true,
+    "isolatedModules": true,
     "verbatimModuleSyntax": true,
-    "moduleResolution": "Node",
-    "jsx": "react-jsx"
-  }
+    "allowSyntheticDefaultImports": true,
+
+    "strict": true,
+    "noEmit": true,
+    "allowJs": true,
+    "useDefineForClassFields": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true
+  },
+  "include": ["src"]
 }
